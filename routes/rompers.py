@@ -15,11 +15,11 @@ def get_rompers():
             "name": item.name,
             "price": item.price,
             "description": item.description,
-            "image": item.image
+            "image": item.image,
+            "quantity": item.quantity  # added
         })
 
     return jsonify(result), 200
-
 
 # POST
 @rompers_bp.route("/rompers", methods=["POST"])
@@ -30,14 +30,14 @@ def add_rompers():
         name=data["name"],
         price=data["price"],
         description=data["description"],
-        image=data["image"]
+        image=data["image"],
+        quantity=data.get("quantity", 0)  # added
     )
 
     db.session.add(new_item)
     db.session.commit()
 
     return jsonify({"message": "Romper added"}), 201
-
 
 # PATCH
 @rompers_bp.route("/rompers/<int:id>", methods=["PATCH"])
@@ -49,11 +49,11 @@ def update_rompers(id):
     item.price = data.get("price", item.price)
     item.description = data.get("description", item.description)
     item.image = data.get("image", item.image)
+    item.quantity = data.get("quantity", item.quantity)  # added
 
     db.session.commit()
 
     return jsonify({"message": "Romper updated"}), 200
-
 
 # DELETE
 @rompers_bp.route("/rompers/<int:id>", methods=["DELETE"])

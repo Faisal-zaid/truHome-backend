@@ -9,6 +9,8 @@ from routes.bathrobes import bathrobes_bp
 from routes.pajamas import pajamas_bp
 from routes.rompers import rompers_bp
 from routes.nightdress import nightdress_bp
+from routes.purchase import purchase_bp
+
 
 app=Flask(__name__)
 
@@ -28,6 +30,8 @@ app.register_blueprint(pajamas_bp)
 app.register_blueprint(nightdress_bp)
 app.register_blueprint(rompers_bp)
 app.register_blueprint(bathrobes_bp)
+app.register_blueprint(purchase_bp)
+
 
 if __name__=="__main__":
     app.run(debug=True)

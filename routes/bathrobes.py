@@ -15,11 +15,11 @@ def get_bathrobes():
             "name": item.name,
             "price": item.price,
             "description": item.description,
-            "image": item.image
+            "image": item.image,
+            "quantity": item.quantity  # added
         })
 
     return jsonify(result), 200
-
 
 # POST
 @bathrobes_bp.route("/bathrobes", methods=["POST"])
@@ -30,14 +30,14 @@ def add_bathrobes():
         name=data["name"],
         price=data["price"],
         description=data["description"],
-        image=data["image"]
+        image=data["image"],
+        quantity=data.get("quantity", 0)  # added
     )
 
     db.session.add(new_item)
     db.session.commit()
 
     return jsonify({"message": "Bathrobe added"}), 201
-
 
 # PATCH
 @bathrobes_bp.route("/bathrobes/<int:id>", methods=["PATCH"])
@@ -49,11 +49,11 @@ def update_bathrobes(id):
     item.price = data.get("price", item.price)
     item.description = data.get("description", item.description)
     item.image = data.get("image", item.image)
+    item.quantity = data.get("quantity", item.quantity)  # added
 
     db.session.commit()
 
     return jsonify({"message": "Bathrobe updated"}), 200
-
 
 # DELETE
 @bathrobes_bp.route("/bathrobes/<int:id>", methods=["DELETE"])

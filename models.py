@@ -18,6 +18,7 @@ class Pajamas(db.Model):
     name = db.Column(db.Text, nullable=False)
     price = db.Column(db.Integer, nullable=False)
     description = db.Column(db.Text, nullable=False)
+    quantity = db.Column(db.Integer, default=0, nullable=False)
     image = db.Column(db.String(500), nullable=False)
 
 
@@ -28,6 +29,7 @@ class Nightdress(db.Model):
     name = db.Column(db.Text, nullable=False)
     price = db.Column(db.Integer, nullable=False)
     description = db.Column(db.Text, nullable=False)
+    quantity = db.Column(db.Integer, default=0, nullable=False)
     image = db.Column(db.String(500), nullable=False)
 
 
@@ -38,6 +40,7 @@ class Rompers(db.Model):
     name = db.Column(db.Text, nullable=False)
     price = db.Column(db.Integer, nullable=False)
     description = db.Column(db.Text, nullable=False)
+    quantity = db.Column(db.Integer, default=0, nullable=False)
     image = db.Column(db.String(500), nullable=False)
 
 
@@ -48,4 +51,5 @@ class Bathrobes(db.Model):
     name = db.Column(db.Text, nullable=False)
     price = db.Column(db.Integer, nullable=False)
     description = db.Column(db.Text, nullable=False)
+    quantity = db.Column(db.Integer, default=0, nullable=False)
     image = db.Column(db.String(500), nullable=False) 

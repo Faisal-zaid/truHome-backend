@@ -1,21 +1,22 @@
 from flask import Blueprint, request, jsonify
 from models import db, Pajamas
 
-pajamas_bp=Blueprint("pajamas_bp", __name__)
+pajamas_bp = Blueprint("pajamas_bp", __name__)
 
-#GET ALL
+# GET ALL
 @pajamas_bp.route("/pajamas", methods=["GET"])
 def get_pajamas():
-    items=Pajamas.query.all()
-    result=[]
+    items = Pajamas.query.all()
+    result = []
 
     for item in items:
         result.append({
-            "id":item.id,
-            "name":item.name,
-            "price":item.price,
-            "description":item.description,
-            "image":item.image
+            "id": item.id,
+            "name": item.name,
+            "price": item.price,
+            "description": item.description,
+            "image": item.image,
+            "quantity": item.quantity  # added
         })
 
     return jsonify(result), 200
@@ -29,14 +30,14 @@ def add_pajamas():
         name=data["name"],
         price=data["price"],
         description=data["description"],
-        image=data["image"]
+        image=data["image"],
+        quantity=data.get("quantity", 0)  # added
     )
 
     db.session.add(new_item)
     db.session.commit()
 
     return jsonify({"message": "Pajama added"}), 201
-
 
 # PATCH
 @pajamas_bp.route("/pajamas/<int:id>", methods=["PATCH"])
@@ -48,11 +49,11 @@ def update_pajamas(id):
     item.price = data.get("price", item.price)
     item.description = data.get("description", item.description)
     item.image = data.get("image", item.image)
+    item.quantity = data.get("quantity", item.quantity)  # added
 
     db.session.commit()
 
     return jsonify({"message": "Pajama updated"}), 200
-
 
 # DELETE
 @pajamas_bp.route("/pajamas/<int:id>", methods=["DELETE"])
@@ -62,4 +63,4 @@ def delete_pajamas(id):
     db.session.delete(item)
     db.session.commit()
 
-    return jsonify({"message": "Pajama deleted"}), 200    
+    return jsonify({"message": "Pajama deleted"}), 200
