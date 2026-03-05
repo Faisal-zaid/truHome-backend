@@ -14,7 +14,7 @@ app=Flask(__name__)
 
 #database config
 
-app.config["SQL_DATABASE_URI"]="sqllite:///TruHome.db"
+app.config["SQLALCHEMY_DATABASE_URI"]="sqlite:///TruHome.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]=False
 
 #initialize extensions
@@ -23,11 +23,11 @@ Migrate(app,db)
 CORS(app)
 
 #register blueprints
-app.register_blueprints(admin_bp)
-app.register_blueprints(pajamas_bp)
-app.register_blueprints(nightdress_bp)
-app.register_blueprints(rompers_bp)
-app.register_blueprints(bathrobes_bp)
+app.register_blueprint(admin_bp)
+app.register_blueprint(pajamas_bp)
+app.register_blueprint(nightdress_bp)
+app.register_blueprint(rompers_bp)
+app.register_blueprint(bathrobes_bp)
 
 if __name__=="__main__":
     app.run(debug=True)

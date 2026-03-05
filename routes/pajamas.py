@@ -4,10 +4,10 @@ from models import db, Pajamas
 pajamas_bp=Blueprint("pajamas_bp", __name__)
 
 #GET ALL
-@pajamas_bp.route("/pajamas", method=["GET"])
+@pajamas_bp.route("/pajamas", methods=["GET"])
 def get_pajamas():
-    items=pajamas.query.all()
-    result[]
+    items=Pajamas.query.all()
+    result=[]
 
     for item in items:
         result.append({

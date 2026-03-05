@@ -1,7 +1,7 @@
 from flask import Blueprint, request,jsonify
 from models import db,Admin
 
-admin_bp=Blueprint("admin_bp,__name__")
+admin_bp=Blueprint("admin_bp",__name__)
 
 @admin_bp.route("/admin/login",methods=["POST"])
 def login():

@@ -6,12 +6,12 @@ db=SQLAlchemy()
 class Admin(db.Model):
     __tablename__="admins"
 
-    id=db.column(db.Integer, primary_key=True)
-    userName=db.column(db.Text, unique=True, nullable =False)
-    password=db.column(db.Text, unique=True, nullable=False)
+    id=db.Column(db.Integer, primary_key=True)
+    userName=db.Column(db.Text, unique=True, nullable =False)
+    password=db.Column(db.Text, unique=True, nullable=False)
 
 #products
-class Pajamas(db.model):
+class Pajamas(db.Model):
     __tablename__="pajamas"   
 
     id = db.Column(db.Integer, primary_key=True)
