@@ -1,66 +1,65 @@
 from flask import Blueprint, request, jsonify
 from models import db, Nightdress
+import os
+from werkzeug.utils import secure_filename
 
 nightdress_bp = Blueprint("nightdress_bp", __name__)
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "../uploads")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# GET ALL
 @nightdress_bp.route("/nightdress", methods=["GET"])
 def get_nightdress():
     items = Nightdress.query.all()
-    result = []
+    return jsonify([{
+        "id": i.id,
+        "name": i.name,
+        "price": i.price,
+        "description": i.description,
+        "image": i.image,
+        "quantity": i.quantity
+    } for i in items]), 200
 
-    for item in items:
-        result.append({
-            "id": item.id,
-            "name": item.name,
-            "price": item.price,
-            "description": item.description,
-            "image": item.image,
-            "quantity": item.quantity  # added
-        })
-
-    return jsonify(result), 200
-
-# POST
 @nightdress_bp.route("/nightdress", methods=["POST"])
 def add_nightdress():
-    data = request.get_json()
+    name = request.form["name"]
+    price = request.form["price"]
+    description = request.form["description"]
+    quantity = request.form.get("quantity", 1)
 
-    new_item = Nightdress(
-        name=data["name"],
-        price=data["price"],
-        description=data["description"],
-        image=data["image"],
-        quantity=data.get("quantity", 0)  # added
-    )
+    file = request.files.get("image")
+    if file:
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(filepath)
+        image_url = f"/uploads/{filename}"
+    else:
+        image_url = ""
 
+    new_item = Nightdress(name=name, price=price, description=description, quantity=quantity, image=image_url)
     db.session.add(new_item)
     db.session.commit()
-
     return jsonify({"message": "Nightdress added"}), 201
 
-# PATCH
 @nightdress_bp.route("/nightdress/<int:id>", methods=["PATCH"])
 def update_nightdress(id):
     item = Nightdress.query.get_or_404(id)
-    data = request.get_json()
+    item.name = request.form.get("name", item.name)
+    item.price = request.form.get("price", item.price)
+    item.description = request.form.get("description", item.description)
+    item.quantity = request.form.get("quantity", item.quantity)
 
-    item.name = data.get("name", item.name)
-    item.price = data.get("price", item.price)
-    item.description = data.get("description", item.description)
-    item.image = data.get("image", item.image)
-    item.quantity = data.get("quantity", item.quantity)  # added
+    file = request.files.get("image")
+    if file:
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(UPLOAD_FOLDER, filename))
+        item.image = f"/uploads/{filename}"
 
     db.session.commit()
-
     return jsonify({"message": "Nightdress updated"}), 200
 
-# DELETE
 @nightdress_bp.route("/nightdress/<int:id>", methods=["DELETE"])
 def delete_nightdress(id):
     item = Nightdress.query.get_or_404(id)
-
     db.session.delete(item)
     db.session.commit()
-
     return jsonify({"message": "Nightdress deleted"}), 200

@@ -1,66 +1,63 @@
 from flask import Blueprint, request, jsonify
 from models import db, Bathrobes
+import os
+from werkzeug.utils import secure_filename
 
 bathrobes_bp = Blueprint("bathrobes_bp", __name__)
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "../uploads")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# GET ALL
 @bathrobes_bp.route("/bathrobes", methods=["GET"])
 def get_bathrobes():
     items = Bathrobes.query.all()
-    result = []
+    return jsonify([{
+        "id": i.id,
+        "name": i.name,
+        "price": i.price,
+        "description": i.description,
+        "image": i.image,
+        "quantity": i.quantity
+    } for i in items]), 200
 
-    for item in items:
-        result.append({
-            "id": item.id,
-            "name": item.name,
-            "price": item.price,
-            "description": item.description,
-            "image": item.image,
-            "quantity": item.quantity  # added
-        })
-
-    return jsonify(result), 200
-
-# POST
 @bathrobes_bp.route("/bathrobes", methods=["POST"])
 def add_bathrobes():
-    data = request.get_json()
+    name = request.form["name"]
+    price = request.form["price"]
+    description = request.form["description"]
+    quantity = request.form.get("quantity", 1)
 
-    new_item = Bathrobes(
-        name=data["name"],
-        price=data["price"],
-        description=data["description"],
-        image=data["image"],
-        quantity=data.get("quantity", 0)  # added
-    )
+    file = request.files.get("image")
+    image_url = ""
+    if file:
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(UPLOAD_FOLDER, filename))
+        image_url = f"/uploads/{filename}"
 
+    new_item = Bathrobes(name=name, price=price, description=description, quantity=quantity, image=image_url)
     db.session.add(new_item)
     db.session.commit()
+    return jsonify({"message": "Bathrobes added"}), 201
 
-    return jsonify({"message": "Bathrobe added"}), 201
-
-# PATCH
 @bathrobes_bp.route("/bathrobes/<int:id>", methods=["PATCH"])
 def update_bathrobes(id):
     item = Bathrobes.query.get_or_404(id)
-    data = request.get_json()
+    item.name = request.form.get("name", item.name)
+    item.price = request.form.get("price", item.price)
+    item.description = request.form.get("description", item.description)
+    item.quantity = request.form.get("quantity", item.quantity)
 
-    item.name = data.get("name", item.name)
-    item.price = data.get("price", item.price)
-    item.description = data.get("description", item.description)
-    item.image = data.get("image", item.image)
-    item.quantity = data.get("quantity", item.quantity)  # added
+    file = request.files.get("image")
+    if file:
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(UPLOAD_FOLDER, filename))
+        item.image = f"/uploads/{filename}"
 
     db.session.commit()
+    return jsonify({"message": "Bathrobes updated"}), 200
 
-    return jsonify({"message": "Bathrobe updated"}), 200
-
-# DELETE
 @bathrobes_bp.route("/bathrobes/<int:id>", methods=["DELETE"])
 def delete_bathrobes(id):
     item = Bathrobes.query.get_or_404(id)
-
     db.session.delete(item)
     db.session.commit()
-
-    return jsonify({"message": "Bathrobe deleted"}), 200
+    return jsonify({"message": "Bathrobes deleted"}), 200

@@ -1,66 +1,63 @@
 from flask import Blueprint, request, jsonify
 from models import db, Rompers
+import os
+from werkzeug.utils import secure_filename
 
 rompers_bp = Blueprint("rompers_bp", __name__)
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "../uploads")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# GET ALL
 @rompers_bp.route("/rompers", methods=["GET"])
 def get_rompers():
     items = Rompers.query.all()
-    result = []
+    return jsonify([{
+        "id": i.id,
+        "name": i.name,
+        "price": i.price,
+        "description": i.description,
+        "image": i.image,
+        "quantity": i.quantity
+    } for i in items]), 200
 
-    for item in items:
-        result.append({
-            "id": item.id,
-            "name": item.name,
-            "price": item.price,
-            "description": item.description,
-            "image": item.image,
-            "quantity": item.quantity  # added
-        })
-
-    return jsonify(result), 200
-
-# POST
 @rompers_bp.route("/rompers", methods=["POST"])
 def add_rompers():
-    data = request.get_json()
+    name = request.form["name"]
+    price = request.form["price"]
+    description = request.form["description"]
+    quantity = request.form.get("quantity", 1)
 
-    new_item = Rompers(
-        name=data["name"],
-        price=data["price"],
-        description=data["description"],
-        image=data["image"],
-        quantity=data.get("quantity", 0)  # added
-    )
+    file = request.files.get("image")
+    image_url = ""
+    if file:
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(UPLOAD_FOLDER, filename))
+        image_url = f"/uploads/{filename}"
 
+    new_item = Rompers(name=name, price=price, description=description, quantity=quantity, image=image_url)
     db.session.add(new_item)
     db.session.commit()
+    return jsonify({"message": "Rompers added"}), 201
 
-    return jsonify({"message": "Romper added"}), 201
-
-# PATCH
 @rompers_bp.route("/rompers/<int:id>", methods=["PATCH"])
 def update_rompers(id):
     item = Rompers.query.get_or_404(id)
-    data = request.get_json()
+    item.name = request.form.get("name", item.name)
+    item.price = request.form.get("price", item.price)
+    item.description = request.form.get("description", item.description)
+    item.quantity = request.form.get("quantity", item.quantity)
 
-    item.name = data.get("name", item.name)
-    item.price = data.get("price", item.price)
-    item.description = data.get("description", item.description)
-    item.image = data.get("image", item.image)
-    item.quantity = data.get("quantity", item.quantity)  # added
+    file = request.files.get("image")
+    if file:
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(UPLOAD_FOLDER, filename))
+        item.image = f"/uploads/{filename}"
 
     db.session.commit()
+    return jsonify({"message": "Rompers updated"}), 200
 
-    return jsonify({"message": "Romper updated"}), 200
-
-# DELETE
 @rompers_bp.route("/rompers/<int:id>", methods=["DELETE"])
 def delete_rompers(id):
     item = Rompers.query.get_or_404(id)
-
     db.session.delete(item)
     db.session.commit()
-
-    return jsonify({"message": "Romper deleted"}), 200
+    return jsonify({"message": "Rompers deleted"}), 200
