@@ -19,6 +19,7 @@ load_dotenv()
 app=Flask(__name__)
 
 CORS(app, resources={r"/*": {"origins": "*"}})
+#CORS(app, origins=["http://localhost:5173"])
 
 #database config
 
