@@ -18,6 +18,8 @@ load_dotenv()
 
 app=Flask(__name__)
 
+CORS(app, resources={r"/*": {"origins": "*"}})
+
 #database config
 
 app.config["SQLALCHEMY_DATABASE_URI"]="sqlite:///TruHome.db"
