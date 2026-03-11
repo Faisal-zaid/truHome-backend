@@ -28,7 +28,10 @@ def purchase_item(category, id):
         return jsonify({"message": "Out of stock"}), 400
 
     # Trigger M-Pesa payment
-    response = stk_push(phone, item.price)
+    try:
+      response = stk_push(phone, item.price)
+    except Exception as e:
+      return jsonify({"message": "Payment failed", "error": str(e)}), 500
 
     return jsonify({
         "message": "M-Pesa prompt sent",

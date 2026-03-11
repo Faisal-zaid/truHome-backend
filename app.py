@@ -28,7 +28,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]=False
 #initialize extensions
 db.init_app(app)
 Migrate(app,db)
-CORS(app)
+
 
 #register blueprints
 app.register_blueprint(admin_bp)
