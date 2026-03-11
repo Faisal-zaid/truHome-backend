@@ -2,6 +2,8 @@ from flask import Flask
 from flask_migrate import Migrate
 from flask_cors import CORS
 from models import db
+from dotenv import load_dotenv
+import os
 
 #import routes
 from routes.admin import admin_bp
@@ -10,7 +12,9 @@ from routes.pajamas import pajamas_bp
 from routes.rompers import rompers_bp
 from routes.nightdress import nightdress_bp
 from routes.purchase import purchase_bp
+from routes.mpesa_callback import mpesa_bp
 
+load_dotenv()
 
 app=Flask(__name__)
 
@@ -31,6 +35,8 @@ app.register_blueprint(nightdress_bp)
 app.register_blueprint(rompers_bp)
 app.register_blueprint(bathrobes_bp)
 app.register_blueprint(purchase_bp)
+app.register_blueprint(mpesa_bp)
+
 
 # ⭐ CREATE DATABASE TABLES
 with app.app_context():
