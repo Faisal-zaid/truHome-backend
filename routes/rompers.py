@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from models import db, Rompers
+from flask_jwt_extended import jwt_required
 
 rompers_bp = Blueprint("rompers_bp", __name__)
 
@@ -21,6 +22,7 @@ def get_rompers():
 
 # POST
 @rompers_bp.route("/rompers", methods=["POST"])
+@jwt_required()
 def add_rompers():
     data = request.get_json()
     new_item = Rompers(
@@ -36,6 +38,7 @@ def add_rompers():
 
 # PATCH
 @rompers_bp.route("/rompers/<int:id>", methods=["PATCH"])
+@jwt_required()
 def update_rompers(id):
     item = Rompers.query.get_or_404(id)
     data = request.get_json()
@@ -49,6 +52,7 @@ def update_rompers(id):
 
 # DELETE
 @rompers_bp.route("/rompers/<int:id>", methods=["DELETE"])
+@jwt_required()
 def delete_rompers(id):
     item = Rompers.query.get_or_404(id)
     db.session.delete(item)
