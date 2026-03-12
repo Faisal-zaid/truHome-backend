@@ -36,11 +36,16 @@ def register():
 
     if Admin.query.filter(Admin.email.ilike(email)).first():
         return jsonify({"message": "Email already exists"}), 400
+    
+      # Check if this is the first admin
+    is_first_admin = Admin.query.count() == 0
+
 
     admin = Admin(
         first_name=first,
         last_name=last,
-        email=email
+        email=email,
+        is_approved=is_first_admin  # auto-approve if first admin
     )
 
     admin.set_password(password)
