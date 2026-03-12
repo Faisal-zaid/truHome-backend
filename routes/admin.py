@@ -53,8 +53,13 @@ def register():
     db.session.add(admin)
     db.session.commit()
 
-    return jsonify({"message": "Admin registered. Waiting approval"}), 201
+       # Return different message for first admin
+    if is_first_admin:
+        message = "First admin registered and automatically approved"
+    else:
+        message = "Admin registered. Waiting approval"
 
+    return jsonify({"message": message}), 201
 
 # LOGIN
 @admin_bp.route("/admin/login", methods=["POST"])
