@@ -4,6 +4,7 @@ from flask_cors import CORS
 from models import db
 from dotenv import load_dotenv
 import os
+from flask_jwt_extended import JWTManager
 
 #import routes
 from routes.admin import admin_bp
@@ -25,6 +26,9 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 
 app.config["SQLALCHEMY_DATABASE_URI"]="sqlite:///TruHome.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]=False
+app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+
+jwt = JWTManager(app)
 
 #initialize extensions
 db.init_app(app)
