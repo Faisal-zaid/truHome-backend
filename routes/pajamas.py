@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from models import db, Pajamas
+from flask_jwt_extended import jwt_required
 
 pajamas_bp = Blueprint("pajamas_bp", __name__)
 
@@ -23,6 +24,7 @@ def get_pajamas():
 
 # POST
 @pajamas_bp.route("/pajamas", methods=["POST"])
+@jwt_required()
 def add_pajamas():
     data = request.get_json()
 
@@ -41,6 +43,7 @@ def add_pajamas():
 
 # PATCH
 @pajamas_bp.route("/pajamas/<int:id>", methods=["PATCH"])
+@jwt_required()
 def update_pajamas(id):
     item = Pajamas.query.get_or_404(id)
     data = request.get_json()
@@ -57,6 +60,7 @@ def update_pajamas(id):
 
 # DELETE
 @pajamas_bp.route("/pajamas/<int:id>", methods=["DELETE"])
+@jwt_required()
 def delete_pajamas(id):
     item = Pajamas.query.get_or_404(id)
 
