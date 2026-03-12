@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from models import db, Nightdress
+from flask_jwt_extended import jwt_required
 
 nightdress_bp = Blueprint("nightdress_bp", __name__)
 
@@ -21,6 +22,7 @@ def get_nightdress():
 
 # POST
 @nightdress_bp.route("/nightdress", methods=["POST"])
+@jwt_required()
 def add_nightdress():
     data = request.get_json()
     new_item = Nightdress(
@@ -36,6 +38,7 @@ def add_nightdress():
 
 # PATCH
 @nightdress_bp.route("/nightdress/<int:id>", methods=["PATCH"])
+@jwt_required()
 def update_nightdress(id):
     item = Nightdress.query.get_or_404(id)
     data = request.get_json()
@@ -49,6 +52,7 @@ def update_nightdress(id):
 
 # DELETE
 @nightdress_bp.route("/nightdress/<int:id>", methods=["DELETE"])
+@jwt_required()
 def delete_nightdress(id):
     item = Nightdress.query.get_or_404(id)
     db.session.delete(item)
