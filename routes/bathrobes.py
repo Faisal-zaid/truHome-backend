@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from models import db, Bathrobes
+from flask_jwt_extended import jwt_required
 
 bathrobes_bp = Blueprint("bathrobes_bp", __name__)
 
@@ -21,6 +22,7 @@ def get_bathrobes():
 
 # POST
 @bathrobes_bp.route("/bathrobes", methods=["POST"])
+@jwt_required()
 def add_bathrobes():
     data = request.get_json()
     new_item = Bathrobes(
@@ -36,6 +38,7 @@ def add_bathrobes():
 
 # PATCH
 @bathrobes_bp.route("/bathrobes/<int:id>", methods=["PATCH"])
+@jwt_required()
 def update_bathrobes(id):
     item = Bathrobes.query.get_or_404(id)
     data = request.get_json()
@@ -49,6 +52,7 @@ def update_bathrobes(id):
 
 # DELETE
 @bathrobes_bp.route("/bathrobes/<int:id>", methods=["DELETE"])
+@jwt_required()
 def delete_bathrobes(id):
     item = Bathrobes.query.get_or_404(id)
     db.session.delete(item)
