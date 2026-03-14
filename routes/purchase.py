@@ -30,6 +30,10 @@ def purchase_item(category, id):
     # Trigger M-Pesa payment
     try:
       response = stk_push(phone, item.price)
+
+      # ✅ Subtract quantity
+      item.quantity -= 1
+      db.session.commit()  # save change
     except Exception as e:
       return jsonify({"message": "Payment failed", "error": str(e)}), 500
 
