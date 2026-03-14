@@ -24,7 +24,7 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 
 #database config
 
-app.config["SQLALCHEMY_DATABASE_URI"]="sqlite:///TruHome.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]=False
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 
