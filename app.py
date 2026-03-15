@@ -77,8 +77,8 @@ app.register_blueprint(products_bp)
 
 
 # ⭐ CREATE DATABASE TABLES
-#with app.app_context():
-   # db.create_all()
+with app.app_context():
+    db.create_all()
 
 
 if __name__=="__main__":
