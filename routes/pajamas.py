@@ -63,11 +63,13 @@ def upload_pajama_image():
 
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        save_path = os.path.join(current_app.root_path, "static/images", filename)
+        upload_folder = os.path.join(current_app.root_path, "static", "images")
+        os.makedirs(upload_folder, exist_ok=True)
+        save_path = os.path.join(upload_folder, filename)
         file.save(save_path)
 
-        return jsonify({"image_path": f"/static/images/{filename}"}), 201
-
+        image_url = f"{request.host_url}static/images/{filename}"
+        return jsonify({"image_path": image_url}), 201
     return jsonify({"message": "Invalid file type"}), 400
 
 # PATCH
