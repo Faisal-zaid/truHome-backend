@@ -6,6 +6,9 @@ from dotenv import load_dotenv
 import os
 from flask_jwt_extended import JWTManager
 
+import cloudinary
+import cloudinary.uploader
+
 #import routes
 from routes.admin import admin_bp
 from routes.bathrobes import bathrobes_bp
@@ -16,6 +19,12 @@ from routes.purchase import purchase_bp
 from routes.mpesa_callback import mpesa_bp
 
 load_dotenv()
+
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET")
+)
 
 app = Flask(__name__, static_folder="static")
 

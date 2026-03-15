@@ -3,6 +3,7 @@ from flask import Blueprint, request, jsonify, current_app
 from models import db, Pajamas
 from flask_jwt_extended import jwt_required
 from werkzeug.utils import secure_filename
+import cloudinary
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 
@@ -62,16 +63,13 @@ def upload_pajama_image():
         return jsonify({"message": "No selected file"}), 400
 
     if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        upload_folder = os.path.join(current_app.root_path, "static", "images")
-        os.makedirs(upload_folder, exist_ok=True)
-        save_path = os.path.join(upload_folder, filename)
-        file.save(save_path)
+        # Upload to Cloudinary
+        result = cloudinary.uploader.upload(file)
+        image_url = result.get("secure_url")  # Cloudinary gives a permanent HTTPS URL
 
-        image_url = f"{request.host_url}static/images/{filename}"
         return jsonify({"image_path": image_url}), 201
-    return jsonify({"message": "Invalid file type"}), 400
 
+    return jsonify({"message": "Invalid file type"}), 400
 # PATCH
 @pajamas_bp.route("/pajamas/<int:id>", methods=["PATCH"])
 @jwt_required()
