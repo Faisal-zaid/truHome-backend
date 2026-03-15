@@ -30,12 +30,21 @@ cloudinary.config(
 
 app = Flask(__name__, static_folder="static")
 
-CORS(
-    app,
-    resources={r"/*": {"origins": "*"}},
-    allow_headers=["Content-Type", "Authorization"],
-    methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"]
-)
+CORS(app, origins=["https://tru-home-apparels.vercel.app"], supports_credentials=True)
+
+@app.after_request
+def add_cors_headers(response):
+    response.headers.add("Access-Control-Allow-Origin", "https://tru-home-apparels.vercel.app")
+    response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
+    response.headers.add("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS")
+    return response
+
+#CORS(
+ #   app,
+  #  resources={r"/*": {"origins": "*"}},
+  #  allow_headers=["Content-Type", "Authorization"],
+  #  methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"]
+#)
 #CORS(app, origins=["http://localhost:5173"])
 
 #database config
