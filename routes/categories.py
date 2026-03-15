@@ -6,8 +6,7 @@ from flask_cors import CORS
 categories_bp = Blueprint("categories_bp", __name__)
 
 
-categories_bp = Blueprint("categories_bp", __name__)
-CORS(categories_bp, origins=["https://tru-home-apparels.vercel.app"], supports_credentials=True)
+
 
 @categories_bp.route("/categories", methods=["GET"])
 def get_categories():
