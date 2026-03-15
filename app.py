@@ -17,7 +17,7 @@ from routes.mpesa_callback import mpesa_bp
 
 load_dotenv()
 
-app=Flask(__name__)
+app = Flask(__name__, static_folder="static")
 
 CORS(app, resources={r"/*": {"origins": "*"}})
 #CORS(app, origins=["http://localhost:5173"])

@@ -1,6 +1,15 @@
-from flask import Blueprint, request, jsonify
+import os
+from flask import Blueprint, request, jsonify, current_app
 from models import db, Pajamas
 from flask_jwt_extended import jwt_required
+from werkzeug.utils import secure_filename
+
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
+
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
 
 pajamas_bp = Blueprint("pajamas_bp", __name__)
 
@@ -40,6 +49,26 @@ def add_pajamas():
     db.session.commit()
 
     return jsonify({"message": "Pajama added"}), 201
+
+@pajamas_bp.route("/pajamas/upload", methods=["POST"])
+@jwt_required()
+def upload_pajama_image():
+    if "image" not in request.files:
+        return jsonify({"message": "No file part"}), 400
+
+    file = request.files["image"]
+
+    if file.filename == "":
+        return jsonify({"message": "No selected file"}), 400
+
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        save_path = os.path.join(current_app.root_path, "static/images", filename)
+        file.save(save_path)
+
+        return jsonify({"image_path": f"/static/images/{filename}"}), 201
+
+    return jsonify({"message": "Invalid file type"}), 400
 
 # PATCH
 @pajamas_bp.route("/pajamas/<int:id>", methods=["PATCH"])
