@@ -25,45 +25,28 @@ class Admin(db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 #products
-class Pajamas(db.Model):
-    __tablename__="pajamas"   
+class Category(db.Model):
+    __tablename__ = "categories"
 
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), unique=True, nullable=False)
+
+    products = db.relationship("Product", backref="category", lazy=True)
+
+
+class Product(db.Model):
+    __tablename__ = "products"
+
+    id = db.Column(db.Integer, primary_key=True)
+
     name = db.Column(db.Text, nullable=False)
     price = db.Column(db.Integer, nullable=False)
     description = db.Column(db.Text, nullable=False)
     quantity = db.Column(db.Integer, default=0, nullable=False)
     image = db.Column(db.String(500), nullable=False)
 
-
-class Nightdress(db.Model):
-    __tablename__ = "nightdress"
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Text, nullable=False)
-    price = db.Column(db.Integer, nullable=False)
-    description = db.Column(db.Text, nullable=False)
-    quantity = db.Column(db.Integer, default=0, nullable=False)
-    image = db.Column(db.String(500), nullable=False)
-
-
-class Rompers(db.Model):
-    __tablename__ = "rompers"
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Text, nullable=False)
-    price = db.Column(db.Integer, nullable=False)
-    description = db.Column(db.Text, nullable=False)
-    quantity = db.Column(db.Integer, default=0, nullable=False)
-    image = db.Column(db.String(500), nullable=False)
-
-
-class Bathrobes(db.Model):
-    __tablename__ = "bathrobes"
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Text, nullable=False)
-    price = db.Column(db.Integer, nullable=False)
-    description = db.Column(db.Text, nullable=False)
-    quantity = db.Column(db.Integer, default=0, nullable=False)
-    image = db.Column(db.String(500), nullable=False) 
+    category_id = db.Column(
+        db.Integer,
+        db.ForeignKey("categories.id"),
+        nullable=False
+    )

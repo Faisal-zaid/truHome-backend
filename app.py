@@ -11,12 +11,14 @@ import cloudinary.uploader
 
 #import routes
 from routes.admin import admin_bp
-from routes.bathrobes import bathrobes_bp
-from routes.pajamas import pajamas_bp
-from routes.rompers import rompers_bp
-from routes.nightdress import nightdress_bp
+#from routes.bathrobes import bathrobes_bp
+#from routes.pajamas import pajamas_bp
+#from routes.rompers import rompers_bp
+#from routes.nightdress import nightdress_bp
 from routes.purchase import purchase_bp
 from routes.mpesa_callback import mpesa_bp
+from routes.categories import categories_bp
+from routes.products import products_bp
 
 load_dotenv()
 
@@ -55,17 +57,19 @@ Migrate(app,db)
 
 #register blueprints
 app.register_blueprint(admin_bp)
-app.register_blueprint(pajamas_bp)
-app.register_blueprint(nightdress_bp)
-app.register_blueprint(rompers_bp)
-app.register_blueprint(bathrobes_bp)
+#app.register_blueprint(pajamas_bp)
+#app.register_blueprint(nightdress_bp)
+#app.register_blueprint(rompers_bp)
+#app.register_blueprint(bathrobes_bp)
 app.register_blueprint(purchase_bp)
 app.register_blueprint(mpesa_bp)
+app.register_blueprint(categories_bp)
+app.register_blueprint(products_bp)
 
 
 # ⭐ CREATE DATABASE TABLES
-with app.app_context():
-    db.create_all()
+#with app.app_context():
+   # db.create_all()
 
 
 if __name__=="__main__":
