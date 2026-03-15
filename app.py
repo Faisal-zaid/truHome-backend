@@ -74,3 +74,8 @@ app.register_blueprint(products_bp)
 
 if __name__=="__main__":
     app.run(host='0.0.0.0',debug=True)
+
+
+
+#ignore this 
+#DATABASE_URL=postgresql://truhome_user:Fa0711498001@localhost/truhome
