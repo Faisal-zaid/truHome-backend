@@ -30,7 +30,13 @@ cloudinary.config(
 
 app = Flask(__name__, static_folder="static")
 
-CORS(app, origins="*", supports_credentials=True)
+CORS(
+    app,
+    origins=["https://tru-home-apparels.vercel.app"],  # your Vercel frontend
+    supports_credentials=True,
+    methods=["GET","POST","PATCH","DELETE","OPTIONS"],
+    allow_headers=["Content-Type","Authorization"]
+)
 
 
 #CORS(
