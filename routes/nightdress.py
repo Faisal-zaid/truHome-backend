@@ -1,6 +1,13 @@
-from flask import Blueprint, request, jsonify
+import os
+from flask import Blueprint, request, jsonify, current_app
 from models import db, Nightdress
 from flask_jwt_extended import jwt_required
+import cloudinary
+
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
+
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 nightdress_bp = Blueprint("nightdress_bp", __name__)
 
@@ -35,6 +42,25 @@ def add_nightdress():
     db.session.add(new_item)
     db.session.commit()
     return jsonify({"message": "Nightdress added"}), 201
+
+# UPLOAD IMAGE
+@nightdress_bp.route("/nightdress/upload", methods=["POST"])
+@jwt_required()
+def upload_nightdress_image():
+    if "image" not in request.files:
+        return jsonify({"message": "No file part"}), 400
+
+    file = request.files["image"]
+
+    if file.filename == "":
+        return jsonify({"message": "No selected file"}), 400
+
+    if file and allowed_file(file.filename):
+        result = cloudinary.uploader.upload(file)
+        image_url = result.get("secure_url")
+        return jsonify({"image_path": image_url}), 201
+
+    return jsonify({"message": "Invalid file type"}), 400
 
 # PATCH
 @nightdress_bp.route("/nightdress/<int:id>", methods=["PATCH"])

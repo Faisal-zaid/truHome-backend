@@ -1,6 +1,13 @@
-from flask import Blueprint, request, jsonify
+import os
+from flask import Blueprint, request, jsonify, current_app
 from models import db, Bathrobes
 from flask_jwt_extended import jwt_required
+import cloudinary
+
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
+
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 bathrobes_bp = Blueprint("bathrobes_bp", __name__)
 
@@ -34,7 +41,26 @@ def add_bathrobes():
     )
     db.session.add(new_item)
     db.session.commit()
-    return jsonify({"message": "Bathrobes added"}), 201
+    return jsonify({"message": "Bathrobe added"}), 201
+
+# UPLOAD IMAGE
+@bathrobes_bp.route("/bathrobes/upload", methods=["POST"])
+@jwt_required()
+def upload_bathrobe_image():
+    if "image" not in request.files:
+        return jsonify({"message": "No file part"}), 400
+
+    file = request.files["image"]
+
+    if file.filename == "":
+        return jsonify({"message": "No selected file"}), 400
+
+    if file and allowed_file(file.filename):
+        result = cloudinary.uploader.upload(file)
+        image_url = result.get("secure_url")
+        return jsonify({"image_path": image_url}), 201
+
+    return jsonify({"message": "Invalid file type"}), 400
 
 # PATCH
 @bathrobes_bp.route("/bathrobes/<int:id>", methods=["PATCH"])
@@ -48,7 +74,7 @@ def update_bathrobes(id):
     item.image = data.get("image", item.image)
     item.quantity = data.get("quantity", item.quantity)
     db.session.commit()
-    return jsonify({"message": "Bathrobes updated"}), 200
+    return jsonify({"message": "Bathrobe updated"}), 200
 
 # DELETE
 @bathrobes_bp.route("/bathrobes/<int:id>", methods=["DELETE"])
@@ -57,4 +83,4 @@ def delete_bathrobes(id):
     item = Bathrobes.query.get_or_404(id)
     db.session.delete(item)
     db.session.commit()
-    return jsonify({"message": "Bathrobes deleted"}), 200
+    return jsonify({"message": "Bathrobe deleted"}), 200
