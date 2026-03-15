@@ -1,11 +1,14 @@
 from flask import Blueprint, request, jsonify
 from models import db, Category
 from flask_jwt_extended import jwt_required
+from flask_cors import CORS
 
 categories_bp = Blueprint("categories_bp", __name__)
 
 
-@categories_bp.route("/categories", methods=["GET"])
+categories_bp = Blueprint("categories_bp", __name__)
+CORS(categories_bp, origins=["https://tru-home-apparels.vercel.app"], supports_credentials=True)
+
 def get_categories():
     categories = Category.query.all()
 
