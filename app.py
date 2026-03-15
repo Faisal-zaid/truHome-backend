@@ -19,7 +19,13 @@ load_dotenv()
 
 app = Flask(__name__, static_folder="static")
 
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(
+    app,
+    resources={r"/*": {"origins": "*"}},
+    supports_credentials=True,
+    expose_headers=["Authorization"],
+    allow_headers=["Content-Type", "Authorization"]
+)
 #CORS(app, origins=["http://localhost:5173"])
 
 #database config
