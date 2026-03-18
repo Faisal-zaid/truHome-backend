@@ -39,3 +39,38 @@ def purchase_item(category_name, id):
         "message": "M-Pesa prompt sent",
         "mpesa_response": response
     }), 200
+
+@purchase_bp.route("/purchase/cart", methods=["POST"])
+def purchase_cart():
+
+    data = request.get_json()
+    phone = data.get("phone")
+    items = data.get("items")
+
+    if not phone or not items:
+        return jsonify({"message": "Missing data"}), 400
+
+    total = 0
+
+    for cart_item in items:
+        product = Product.query.get(cart_item["id"])
+
+        if not product or product.quantity < cart_item["quantity"]:
+            return jsonify({"message": f"{product.name} out of stock"}), 400
+
+        total += product.price * cart_item["quantity"]
+
+    try:
+        response = stk_push(phone, total)
+
+        # reduce stock
+        for cart_item in items:
+            product = Product.query.get(cart_item["id"])
+            product.quantity -= cart_item["quantity"]
+
+        db.session.commit()
+
+    except Exception as e:
+        return jsonify({"message": "Payment failed"}), 500
+
+    return jsonify({"message": "Payment sent", "total": total}), 200
