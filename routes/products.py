@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from models import db, Product, Category
+from models import db, Product, Category, Sale
 from flask_jwt_extended import jwt_required
 import cloudinary
 
@@ -29,7 +29,8 @@ def get_products(category):
             "price": p.price,
             "description": p.description,
             "image": p.image,
-            "quantity": p.quantity
+            "quantity": p.quantity,
+            "sold": getattr(p, "sold", 0)
         }
         for p in products
     ])
@@ -119,3 +120,24 @@ def upload():
         }), 201
 
     return jsonify({"message": "Invalid file type"}), 400
+
+@products_bp.route("/inventory", methods=["GET"])
+@jwt_required()
+def inventory():
+    products = Product.query.all()
+    result = []
+
+    for p in products:
+        total_sold = db.session.query(db.func.sum(Sale.quantity)).filter_by(product_id=p.id).scalar() or 0
+        revenue = total_sold * p.price
+        result.append({
+            "id": p.id,
+            "name": p.name,
+            "category": p.category.name,
+            "price": p.price,
+            "quantity": p.quantity,
+            "sold": total_sold,
+            "revenue": revenue
+        })
+
+    return jsonify(result)
