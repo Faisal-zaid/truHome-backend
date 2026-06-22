@@ -8,10 +8,10 @@ purchase_bp = Blueprint("purchase_bp", __name__)
 def purchase_item(category_name, id):
     data = request.get_json()
     phone = data.get("phone")
+    email = data.get("email")
 
-    if not phone:
-        return jsonify({"message": "Phone number is required"}), 400
-
+    if not phone or not email:
+        return jsonify({"message":"Phone and email required"}),400
     # Find the category first
     category = Category.query.filter_by(name=category_name).first()
     if not category:
