@@ -23,6 +23,8 @@ from routes.products import products_bp
 
 load_dotenv()
 
+
+
 cloudinary.config(
     cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
     api_key=os.getenv("CLOUDINARY_API_KEY"),
@@ -43,6 +45,19 @@ CORS(
     methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization"]
 )
+
+mail = Mail()
+
+app.config["MAIL_SERVER"] = "smtp.gmail.com"
+app.config["MAIL_PORT"] = 587
+
+app.config["MAIL_USE_TLS"] = True
+
+app.config["MAIL_USERNAME"] = os.getenv("EMAIL_USER")
+
+app.config["MAIL_PASSWORD"] = os.getenv("EMAIL_PASSWORD")
+
+mail.init_app(app)
 
 # ── database config ──
 # PostgreSQL (production) — uncomment and set DATABASE_URL in .env to switch
