@@ -5,6 +5,7 @@ from models import db
 from dotenv import load_dotenv
 import os
 from flask_jwt_extended import JWTManager
+from flask_mail import Mail
 
 import cloudinary
 import cloudinary.uploader
@@ -28,43 +29,40 @@ cloudinary.config(
     api_secret=os.getenv("CLOUDINARY_API_SECRET")
 )
 
+# ── absolute path so SQLite can always find / create the file ──
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+INSTANCE_DIR = os.path.join(BASE_DIR, "instance")
+os.makedirs(INSTANCE_DIR, exist_ok=True)
+
 app = Flask(__name__, static_folder="static")
 
 CORS(
     app,
     origins=["https://tru-home-apparels.vercel.app"],  # your frontend URL
     supports_credentials=True,
-    methods=["GET","POST","PATCH","DELETE","OPTIONS"],
-    allow_headers=["Content-Type","Authorization"]
+    methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"]
 )
 
+# ── database config ──
+# PostgreSQL (production) — uncomment and set DATABASE_URL in .env to switch
+# database_url = os.getenv("DATABASE_URL")
+# if database_url and database_url.startswith("postgres://"):
+#     database_url = database_url.replace("postgres://", "postgresql://", 1)
+# app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 
-#CORS(
- #   app,
-  #  resources={r"/*": {"origins": "*"}},
-  #  allow_headers=["Content-Type", "Authorization"],
-  #  methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"]
-#)
-#CORS(app, origins=["http://localhost:5173"])
-
-#database config
-database_url = os.getenv("DATABASE_URL")
-
-if database_url and database_url.startswith("postgres://"):
-    database_url = database_url.replace("postgres://", "postgresql://", 1)
-
-app.config["SQLALCHEMY_DATABASE_URI"] = database_url
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]=False
+# SQLite (local dev)
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.join(INSTANCE_DIR, 'TruHome.db')}"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 
 jwt = JWTManager(app)
 
-#initialize extensions
+# ── initialize extensions ──
 db.init_app(app)
-Migrate(app,db)
+Migrate(app, db)
 
-
-#register blueprints
+# ── register blueprints ──
 app.register_blueprint(admin_bp)
 #app.register_blueprint(pajamas_bp)
 #app.register_blueprint(nightdress_bp)
@@ -75,16 +73,14 @@ app.register_blueprint(mpesa_bp)
 app.register_blueprint(categories_bp)
 app.register_blueprint(products_bp)
 
-
-# ⭐ CREATE DATABASE TABLES
+# ── create database tables ──
 with app.app_context():
     db.create_all()
 
 
-if __name__=="__main__":
-    app.run(host='0.0.0.0',debug=True)
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', debug=True)
 
 
-
-#ignore this 
-#DATABASE_URL=postgresql://truhome_user:Fa0711498001@localhost/truhome
+# ── PostgreSQL connection string (for production / .env) ──
+# DATABASE_URL=postgresql://truhome_user:Fa0711498001@localhost/truhome
