@@ -58,3 +58,32 @@ class Sale(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Integer, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)    
+
+class PendingPurchase(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    checkout_request_id = db.Column(
+        db.String(100),
+        unique=True
+    )
+
+    email = db.Column(
+        db.String(120),
+        nullable=False
+    )
+
+    product_id = db.Column(
+        db.Integer,
+        db.ForeignKey("products.id")
+    )
+
+    quantity = db.Column(
+        db.Integer,
+        default=1
+    )
+
+    is_paid = db.Column(
+        db.Boolean,
+        default=False
+    )    
