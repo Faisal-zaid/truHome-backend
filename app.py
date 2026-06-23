@@ -5,7 +5,9 @@ from models import db
 from dotenv import load_dotenv
 import os
 from flask_jwt_extended import JWTManager
-from flask_mail import Mail
+from extensions import mail
+
+
 
 import cloudinary
 import cloudinary.uploader
@@ -46,7 +48,7 @@ CORS(
     allow_headers=["Content-Type", "Authorization"]
 )
 
-mail = Mail()
+mail.init_app(app)
 
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
 app.config["MAIL_PORT"] = 587
