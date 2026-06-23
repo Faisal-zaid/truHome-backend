@@ -1,5 +1,5 @@
 from flask_mail import Message
-from app import mail
+from extensions import mail
 
 
 def send_purchase_email(email, product):
